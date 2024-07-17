@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .App-logo {
@@ -24,8 +25,30 @@
   color: white;
 }
 
+input[type="text"] {
+  width: 800px;
+  height: 60px;
+  font-size: calc(10px + 2vmin);
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 .App-link {
   color: #61dafb;
+}
+
+button {
+  background-color: #008cba; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  margin-left: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  border-radius: 8px;
+  width: 200px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 @keyframes App-logo-spin {
