@@ -1,9 +1,11 @@
 import "./App.css";
 import QRCode from "react-qr-code";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 function App() {
   let path = window.location.href.split("?")[0];
+
+  const inputRef = useRef(null);
 
   const getQueryVariable = (variable) => {
     var query = window.location.search.substring(1);
@@ -71,6 +73,10 @@ function App() {
     "Copy URL to clipboard for sharing"
   );
 
+  useEffect(() => {
+    inputRef.current.focus(); // Focus the input on page load
+  }, []);
+
   return (
     <div
       style={{
@@ -106,6 +112,7 @@ function App() {
           type="text"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
+          ref={inputRef}
           name="url"
           placeholder="Paste or type your URL here"
         />
