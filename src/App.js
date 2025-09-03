@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 
 function App() {
   let path = window.location.href.split("?")[0];
-
   const inputRef = useRef(null);
 
   const getQueryVariable = (variable) => {
@@ -23,12 +22,9 @@ function App() {
   const fallbackCopyTextToClipboard = (text) => {
     var textArea = document.createElement("textarea");
     textArea.value = text;
-
-    // Avoid scrolling to bottom
     textArea.style.top = "0";
     textArea.style.left = "0";
     textArea.style.position = "fixed";
-
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -59,6 +55,22 @@ function App() {
     );
   };
 
+  const removeParamsAndUpdateURL = (newUrl, checkStatus) => {
+    setUrl(newUrl);
+    setRemoveParams(checkStatus);
+    if (newUrl !== "") {
+      try {
+        const parsedUrl = new URL(newUrl);
+        if (checkStatus) {
+          parsedUrl.search = "";
+        }
+        setQrUrl(parsedUrl.toString());
+      } catch (err) {
+        setQrUrl(newUrl);
+      }
+    }
+  };
+
   const handlePress = () => {
     copyTextToClipboard(path + "?u=" + url);
     setButtonText("✓ Copied!");
@@ -66,15 +78,16 @@ function App() {
   };
 
   const u = getQueryVariable("u");
-  console.log(u);
   const [url, setUrl] = useState(u);
-
   const [buttonText, setButtonText] = useState(
     "Copy URL to clipboard for sharing"
   );
+  const [qrUrl, setQrUrl] = useState(u);
+
+  const [removeParams, setRemoveParams] = useState(false);
 
   useEffect(() => {
-    inputRef.current.focus(); // Focus the input on page load
+    inputRef.current.focus();
   }, []);
 
   return (
@@ -86,11 +99,7 @@ function App() {
         textAlign: "center",
       }}
     >
-      <div
-        style={{
-          textAlign: "center",
-        }}
-      >
+      <div style={{ textAlign: "center" }}>
         <QRCode
           size={256}
           style={{
@@ -99,24 +108,55 @@ function App() {
             width: "100%",
             marginBottom: 20,
           }}
-          value={url}
+          value={qrUrl}
           viewBox={`0 0 256 256`}
         />
       </div>
+
+      {/* Text input */}
       <div
         style={{
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "10px",
         }}
       >
         <input
           type="text"
           value={url}
-          onChange={(event) => setUrl(event.target.value)}
+          onChange={(event) =>
+            removeParamsAndUpdateURL(event.target.value, removeParams)
+          }
           ref={inputRef}
           name="url"
           placeholder="Paste or type your URL here"
         />
       </div>
+
+      {/* Checkbox on a new line, left-aligned */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "fit-content",
+            textAlign: "left",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={removeParams}
+            onChange={() => removeParamsAndUpdateURL(url, !removeParams)}
+          />
+          <label style={{ marginLeft: "5px" }}>Remove query parameters</label>
+        </div>
+      </div>
+
       {url !== "" && (
         <div
           style={{
@@ -132,7 +172,7 @@ function App() {
               fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
             }}
           >
-            {path}?u={url}
+            {path}?u={qrUrl}
           </p>
           <p>
             <button onClick={handlePress}>{buttonText}</button>
